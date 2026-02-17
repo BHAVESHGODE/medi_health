@@ -45,90 +45,119 @@ function Register() {
     return (
         <div className="min-h-screen flex">
             {/* Left Panel */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 relative overflow-hidden">
-                <div className="absolute top-20 right-20 w-72 h-72 rounded-full bg-white/5 blur-xl" />
-                <div className="absolute bottom-10 left-10 w-64 h-64 rounded-full bg-white/5 blur-xl" />
+            <div className="hidden lg:flex lg:w-[55%] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+                {/* Abstract background elements */}
+                <div className="absolute top-0 left-0 w-full h-full opacity-20">
+                    <div className="absolute top-[15%] right-[15%] w-96 h-96 rounded-full bg-emerald-500 blur-[120px]" />
+                    <div className="absolute bottom-[25%] left-[10%] w-80 h-80 rounded-full bg-teal-500 blur-[100px]" />
+                    <div className="absolute top-[50%] left-[30%] w-60 h-60 rounded-full bg-cyan-500 blur-[80px]" />
+                </div>
+                
+                {/* Subtle grid pattern */}
+                <div className="absolute inset-0 opacity-[0.03]" 
+                    style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} 
+                />
 
-                <div className="relative z-10 flex flex-col justify-center px-16">
+                <div className="relative z-10 flex flex-col justify-center px-16 py-12">
                     <div className="flex items-center gap-3 mb-12">
-                        <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
                             <LocalHospitalIcon style={{ fontSize: 28 }} className="text-white" />
                         </div>
-                        <span className="text-2xl font-bold text-white">MediHealth</span>
+                        <span className="text-2xl font-bold text-white tracking-tight">MediHealth</span>
                     </div>
 
-                    <h1 className="text-4xl font-bold text-white leading-tight mb-4">
-                        Join the Future of<br />Healthcare Management
-                    </h1>
-                    <p className="text-lg text-white/70 mb-12 max-w-md">
-                        Create your account and start managing patient care with the most advanced hospital management platform.
-                    </p>
+                    <div className="space-y-8">
+                        <div>
+                            <h1 className="text-4xl font-bold text-white leading-[1.2]">
+                                Join the Team
+                            </h1>
+                            <p className="text-lg text-slate-400 mt-4 max-w-md leading-relaxed">
+                                Get started with MediHealth and streamline your healthcare operations with powerful tools.
+                            </p>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { value: '10K+', label: 'Patients Managed' },
-                            { value: '500+', label: 'Healthcare Staff' },
-                            { value: '99.9%', label: 'Uptime SLA' },
-                            { value: '24/7', label: 'Support Available' },
-                        ].map((stat, i) => (
-                            <div key={i} className="bg-white/10 backdrop-blur rounded-xl p-4">
-                                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                                <p className="text-sm text-white/60">{stat.label}</p>
-                            </div>
-                        ))}
+                        {/* Feature highlights - minimal */}
+                        <div className="space-y-3">
+                            {[
+                                'Access patient records securely',
+                                'Real-time appointment scheduling',
+                                'Comprehensive analytics dashboard'
+                            ].map((feature, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                    <CheckCircleIcon className="text-emerald-400" style={{ fontSize: 18 }} />
+                                    <span className="text-slate-300 text-sm">{feature}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Bottom note */}
+                    <div className="mt-auto pt-12">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-full border border-slate-700">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-sm text-slate-400">Trusted by 500+ healthcare facilities</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Panel */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-gray-900">
+            <div className="w-full lg:w-[45%] flex items-center justify-center p-8 bg-white dark:bg-gray-900">
                 <div className="w-full max-w-md">
-                    <div className="flex items-center gap-2 mb-8 lg:hidden">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                    <div className="flex items-center gap-2 mb-10 lg:hidden">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
                             <LocalHospitalIcon style={{ fontSize: 22 }} />
                         </div>
-                        <span className="text-xl font-bold text-gray-900">MediHealth</span>
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">MediHealth</span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Create your account</h2>
-                    <p className="text-sm text-gray-500 mb-8">Get started with MediHealth in seconds</p>
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create your account</h2>
+                        <p className="text-sm text-gray-500 mt-1.5">Get started with MediHealth in seconds</p>
+                    </div>
 
                     <form onSubmit={onSubmit} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
                             <div className="relative">
-                                <PersonIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style={{ fontSize: 20 }} />
-                                <input type="text" name="name" value={name} onChange={onChange} placeholder="John Doe" className="glass-input w-full pl-10" required />
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <PersonIcon className="text-gray-400" style={{ fontSize: 18 }} />
+                                </div>
+                                <input type="text" name="name" value={name} onChange={onChange} placeholder="John Doe" className="block w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-gray-400" required />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                             <div className="relative">
-                                <EmailIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style={{ fontSize: 20 }} />
-                                <input type="email" name="email" value={email} onChange={onChange} placeholder="you@example.com" className="glass-input w-full pl-10" required />
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <EmailIcon className="text-gray-400" style={{ fontSize: 18 }} />
+                                </div>
+                                <input type="email" name="email" value={email} onChange={onChange} placeholder="you@example.com" className="block w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-gray-400" required />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
                             <div className="relative">
-                                <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style={{ fontSize: 20 }} />
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <LockIcon className="text-gray-400" style={{ fontSize: 18 }} />
+                                </div>
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     name="password" value={password} onChange={onChange}
                                     placeholder="Create a strong password"
-                                    className="glass-input w-full pl-10 pr-10" required
+                                    className="block w-full pl-10 pr-12 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-gray-400" required
                                 />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                    {showPassword ? <VisibilityOffIcon style={{ fontSize: 20 }} /> : <VisibilityIcon style={{ fontSize: 20 }} />}
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    {showPassword ? <VisibilityOffIcon style={{ fontSize: 18 }} /> : <VisibilityIcon style={{ fontSize: 18 }} />}
                                 </button>
                             </div>
                             {password && (
-                                <div className="mt-2 space-y-1">
+                                <div className="mt-3 space-y-2">
                                     {passwordChecks.map((check, i) => (
-                                        <div key={i} className={`flex items-center gap-1.5 text-xs ${check.met ? 'text-emerald-600' : 'text-gray-400'}`}>
-                                            <CheckCircleIcon style={{ fontSize: 14 }} />
+                                        <div key={i} className={`flex items-center gap-2 text-xs ${check.met ? 'text-emerald-600' : 'text-gray-400'}`}>
+                                            <div className={`w-1.5 h-1.5 rounded-full ${check.met ? 'bg-emerald-500' : 'bg-gray-300'}`} />
                                             {check.label}
                                         </div>
                                     ))}
@@ -139,11 +168,11 @@ function Register() {
                         <div className="flex items-start gap-2">
                             <input type="checkbox" className="w-4 h-4 mt-0.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
                             <span className="text-xs text-gray-500">
-                                I agree to the <button type="button" className="text-primary-600 font-semibold hover:underline">Terms of Service</button> and <button type="button" className="text-primary-600 font-semibold hover:underline">Privacy Policy</button>
+                                I agree to the <button type="button" className="text-primary-600 font-medium hover:underline">Terms</button> and <button type="button" className="text-primary-600 font-medium hover:underline">Privacy Policy</button>
                             </span>
                         </div>
 
-                        <button type="submit" className="btn-primary w-full py-3 text-base bg-emerald-600 hover:bg-emerald-700">
+                        <button type="submit" className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5">
                             Create Account
                         </button>
                     </form>

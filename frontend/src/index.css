@@ -45,9 +45,16 @@
 
 @layer components {
 
-  /* Glass & Panel Effects */
+  /* Glass & Panel Effects - Enhanced with more depth */
   .glass-panel {
-    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 transition-all duration-300;
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  .glass-panel:hover {
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.04);
+    transform: translateY(-1px);
   }
 
   .glass-input {
@@ -91,13 +98,18 @@
     @apply animate-fade-in;
   }
 
-  /* Card Hover Lift */
+  /* Card Hover Lift - Enhanced */
   .card-hover {
     @apply transition-all duration-300 cursor-pointer;
   }
 
   .card-hover:hover {
-    @apply shadow-card-hover -translate-y-0.5;
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .card-hover:active {
+    transform: translateY(0);
   }
 
   /* Status Dot */
@@ -131,29 +143,30 @@
     @apply bg-gray-700;
   }
 
-  /* Badge */
+  /* Badge - More refined */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    letter-spacing: 0.01em;
   }
 
   .badge-success {
-    @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200;
+    @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/60;
   }
 
   .badge-warning {
-    @apply bg-amber-50 text-amber-700 ring-1 ring-amber-200;
+    @apply bg-amber-50 text-amber-700 ring-1 ring-amber-200/60;
   }
 
   .badge-danger {
-    @apply bg-rose-50 text-rose-700 ring-1 ring-rose-200;
+    @apply bg-rose-50 text-rose-700 ring-1 ring-rose-200/60;
   }
 
   .badge-info {
-    @apply bg-sky-50 text-sky-700 ring-1 ring-sky-200;
+    @apply bg-sky-50 text-sky-700 ring-1 ring-sky-200/60;
   }
 
   .badge-neutral {
-    @apply bg-gray-100 text-gray-600 ring-1 ring-gray-200;
+    @apply bg-gray-100 text-gray-600 ring-1 ring-gray-200/60;
   }
 
   /* Table Styles */
@@ -166,7 +179,7 @@
   }
 
   .dark .table-modern thead th {
-    @apply bg-gray-700 text-gray-400;
+    @apply bg-gray-700/50 text-gray-400;
   }
 
   .table-modern tbody td {
@@ -174,7 +187,7 @@
   }
 
   .dark .table-modern tbody td {
-    @apply border-gray-700;
+    @apply border-gray-700/50;
   }
 
   .table-modern tbody tr {
@@ -182,7 +195,7 @@
   }
 
   .table-modern tbody tr:hover {
-    @apply bg-gray-50;
+    @apply bg-gray-50/80;
   }
 
   .dark .table-modern tbody tr:hover {
@@ -208,6 +221,16 @@
 
   .metric-rose {
     @apply bg-gradient-to-br from-rose-400 to-pink-600;
+  }
+
+  /* Input focus glow effect */
+  .input-glow:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Subtle card texture */
+  .card-texture {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 }
 

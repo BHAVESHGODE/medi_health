@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getClaims, reset } from '../features/insurance/insuranceSlice';
 import Spinner from '../components/Spinner';
+import PageHeader from '../components/common/PageHeader';
+import StatusBadge from '../components/common/StatusBadge';
+import EmptyState from '../components/common/EmptyState';
 import PolicyIcon from '@mui/icons-material/Policy';
 
 function InsuranceDashboard() {
@@ -16,42 +19,48 @@ function InsuranceDashboard() {
     if (isLoading) return <Spinner />;
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold mb-8 text-teal-700 flex items-center gap-2">
-                <PolicyIcon fontSize="large" /> Insurance Claims
-            </h1>
+        <div>
+            <PageHeader
+                title="Insurance Claims"
+                subtitle="Manage insurance claims and reimbursements"
+                icon={<PolicyIcon style={{ fontSize: 22 }} />}
+            />
 
-            <div className="glass-panel p-6 overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="border-b">
-                            <th className="p-3">Patient</th>
-                            <th className="p-3">Provider</th>
-                            <th className="p-3">Policy #</th>
-                            <th className="p-3">Amount</th>
-                            <th className="p-3">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {claims.map(claim => (
-                            <tr key={claim._id} className="border-b hover:bg-gray-50">
-                                <td className="p-3 font-medium">{claim.patient.user.name}</td>
-                                <td className="p-3">{claim.provider}</td>
-                                <td className="p-3">{claim.policyNumber}</td>
-                                <td className="p-3">${claim.claimAmount}</td>
-                                <td className="p-3">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${claim.status === 'Approved' ? 'bg-green-100 text-green-700' :
-                                            claim.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {claim.status}
-                                    </span>
-                                </td>
+            {claims.length === 0 ? (
+                <EmptyState 
+                    title="No claims found" 
+                    subtitle="Insurance claims will appear here" 
+                />
+            ) : (
+                <div className="glass-panel overflow-hidden">
+                    <table className="table-modern">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Provider</th>
+                                <th>Policy #</th>
+                                <th>Amount</th>
+                                <th>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {claims.length === 0 && <p className="text-center py-4 text-gray-500">No claims found.</p>}
-            </div>
+                        </thead>
+                        <tbody>
+                            {claims.map(claim => (
+                                <tr key={claim._id}>
+                                    <td className="font-medium text-gray-900 dark:text-white">
+                                        {claim.patient?.user?.name || 'Unknown'}
+                                    </td>
+                                    <td className="text-gray-500">{claim.provider}</td>
+                                    <td className="text-gray-500">{claim.policyNumber}</td>
+                                    <td className="font-semibold">${claim.claimAmount}</td>
+                                    <td>
+                                        <StatusBadge status={claim.status} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }

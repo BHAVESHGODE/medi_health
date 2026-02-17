@@ -19,6 +19,11 @@ import TriageBoard from './pages/TriageBoard';
 import NotificationsCenter from './pages/NotificationsCenter';
 import GlobalSearch from './pages/GlobalSearch';
 import ExportsReports from './pages/ExportsReports';
+import Departments from './pages/Departments';
+import StaffDirectory from './pages/StaffDirectory';
+import Settings from './pages/Settings';
+import HelpCenter from './pages/HelpCenter';
+import Feedback from './pages/Feedback';
 
 function App() {
   return (
@@ -43,6 +48,11 @@ function App() {
             <Route path="notifications" element={<NotificationsCenter />} />
             <Route path="search" element={<GlobalSearch />} />
             <Route path="exports" element={<ExportsReports />} />
+            <Route path="departments" element={<Departments />} />
+            <Route path="staff" element={<StaffDirectory />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="help" element={<HelpCenter />} />
+            <Route path="feedback" element={<Feedback />} />
           </Route>
         </Routes>
       </Router>

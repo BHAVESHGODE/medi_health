@@ -6,6 +6,7 @@ import StatCard from '../components/common/StatCard';
 import StatusBadge from '../components/common/StatusBadge';
 import SearchBar from '../components/common/SearchBar';
 import FilterBar from '../components/common/FilterBar';
+import EmptyState from '../components/common/EmptyState';
 import { TableSkeleton } from '../components/common/LoadingSkeleton';
 
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
@@ -32,6 +33,7 @@ function PharmacyDashboard() {
         e.preventDefault();
         dispatch(addItem(newItem));
         setShowAddModal(false);
+        setNewItem({ itemName: '', category: 'Medicine', quantity: 0, unitPrice: 0, supplier: '', lowStockThreshold: 10 });
     };
 
     const totalValue = items.reduce((acc, curr) => acc + (curr.unitPrice * curr.quantity), 0);
@@ -73,42 +75,45 @@ function PharmacyDashboard() {
                 <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search items..." className="w-64" />
             </div>
 
-            <div className="glass-panel overflow-hidden">
-                <table className="table-modern">
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Category</th>
-                            <th>Stock</th>
-                            <th>Price</th>
-                            <th>Supplier</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filtered.map(item => (
-                            <tr key={item._id}>
-                                <td className="font-medium text-gray-900 dark:text-white">{item.itemName}</td>
-                                <td><span className="badge-neutral badge">{item.category}</span></td>
-                                <td>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold">{item.quantity}</span>
-                                        {item.quantity <= item.lowStockThreshold && (
-                                            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse-soft" />
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="font-medium">${item.unitPrice}</td>
-                                <td className="text-gray-500">{item.supplier || '-'}</td>
-                                <td>
-                                    <StatusBadge status={item.quantity <= item.lowStockThreshold ? 'Low Stock' : 'In Stock'} />
-                                </td>
+            {filtered.length === 0 ? (
+                <EmptyState title="No items found" subtitle="Try adjusting your search or add new items" />
+            ) : (
+                <div className="glass-panel overflow-hidden">
+                    <table className="table-modern">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Stock</th>
+                                <th>Price</th>
+                                <th>Supplier</th>
+                                <th>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {filtered.length === 0 && <p className="text-center py-8 text-gray-400 text-sm">No items found.</p>}
-            </div>
+                        </thead>
+                        <tbody>
+                            {filtered.map(item => (
+                                <tr key={item._id}>
+                                    <td className="font-medium text-gray-900 dark:text-white">{item.itemName}</td>
+                                    <td><span className="badge-neutral badge">{item.category}</span></td>
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold">{item.quantity}</span>
+                                            {item.quantity <= item.lowStockThreshold && (
+                                                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="font-medium">${item.unitPrice}</td>
+                                    <td className="text-gray-500">{item.supplier || '-'}</td>
+                                    <td>
+                                        <StatusBadge status={item.quantity <= item.lowStockThreshold ? 'Low Stock' : 'In Stock'} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {/* Add Item Modal */}
             {showAddModal && (
@@ -121,17 +126,42 @@ function PharmacyDashboard() {
                             </button>
                         </div>
                         <form onSubmit={handleAddItem} className="space-y-4">
-                            <input className="glass-input w-full" placeholder="Item Name" value={newItem.itemName} onChange={e => setNewItem({ ...newItem, itemName: e.target.value })} required />
-                            <select className="glass-input w-full" value={newItem.category} onChange={e => setNewItem({ ...newItem, category: e.target.value })}>
+                            <input 
+                                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                placeholder="Item Name" 
+                                value={newItem.itemName} 
+                                onChange={e => setNewItem({ ...newItem, itemName: e.target.value })} 
+                                required 
+                            />
+                            <select 
+                                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                value={newItem.category} 
+                                onChange={e => setNewItem({ ...newItem, category: e.target.value })}
+                            >
                                 <option value="Medicine">Medicine</option>
                                 <option value="Equipment">Equipment</option>
                                 <option value="Consumable">Consumable</option>
                             </select>
                             <div className="grid grid-cols-2 gap-3">
-                                <input type="number" className="glass-input w-full" placeholder="Quantity" value={newItem.quantity} onChange={e => setNewItem({ ...newItem, quantity: e.target.value })} />
-                                <input type="number" className="glass-input w-full" placeholder="Unit Price" value={newItem.unitPrice} onChange={e => setNewItem({ ...newItem, unitPrice: e.target.value })} />
+                                <input type="number" 
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                    placeholder="Quantity" 
+                                    value={newItem.quantity} 
+                                    onChange={e => setNewItem({ ...newItem, quantity: Number(e.target.value) })} 
+                                />
+                                <input type="number" 
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                    placeholder="Unit Price" 
+                                    value={newItem.unitPrice} 
+                                    onChange={e => setNewItem({ ...newItem, unitPrice: Number(e.target.value) })} 
+                                />
                             </div>
-                            <input className="glass-input w-full" placeholder="Supplier" value={newItem.supplier} onChange={e => setNewItem({ ...newItem, supplier: e.target.value })} />
+                            <input 
+                                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                placeholder="Supplier" 
+                                value={newItem.supplier} 
+                                onChange={e => setNewItem({ ...newItem, supplier: e.target.value })} 
+                            />
                             <div className="flex justify-end gap-3 pt-2">
                                 <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary">Cancel</button>
                                 <button type="submit" className="btn-primary">Add Item</button>

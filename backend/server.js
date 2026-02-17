@@ -57,6 +57,7 @@ const connectDB = async () => {
 const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const billingRoutes = require('./routes/billingRoutes');
@@ -76,6 +77,7 @@ const triageRoutes = require('./routes/triageRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/departments', departmentRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/bills', billingRoutes);
