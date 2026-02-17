@@ -15,6 +15,10 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import LabDashboard from './pages/LabDashboard';
 import InsuranceDashboard from './pages/InsuranceDashboard';
 import Layout from './layouts/Layout';
+import TriageBoard from './pages/TriageBoard';
+import NotificationsCenter from './pages/NotificationsCenter';
+import GlobalSearch from './pages/GlobalSearch';
+import ExportsReports from './pages/ExportsReports';
 
 function App() {
   return (
@@ -35,6 +39,10 @@ function App() {
             <Route path="analytics" element={<AnalyticsDashboard />} />
             <Route path="lab" element={<LabDashboard />} />
             <Route path="insurance" element={<InsuranceDashboard />} />
+            <Route path="triage" element={<TriageBoard />} />
+            <Route path="notifications" element={<NotificationsCenter />} />
+            <Route path="search" element={<GlobalSearch />} />
+            <Route path="exports" element={<ExportsReports />} />
           </Route>
         </Routes>
       </Router>

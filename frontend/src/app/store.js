@@ -7,6 +7,10 @@ import emergencyReducer from '../features/emergency/emergencySlice';
 import chatReducer from '../features/chat/chatSlice';
 import labReducer from '../features/lab/labSlice';
 import insuranceReducer from '../features/insurance/insuranceSlice';
+import notificationsReducer from '../features/notifications/notificationSlice';
+import triageReducer from '../features/triage/triageSlice';
+import searchReducer from '../features/search/searchSlice';
+import exportsReducer from '../features/exports/exportSlice';
 
 export const store = configureStore({
     reducer: {
@@ -18,5 +22,9 @@ export const store = configureStore({
         chat: chatReducer,
         lab: labReducer,
         insurance: insuranceReducer,
+        notifications: notificationsReducer,
+        triage: triageReducer,
+        search: searchReducer,
+        exports: exportsReducer,
     },
 });

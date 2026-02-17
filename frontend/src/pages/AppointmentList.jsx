@@ -1,89 +1,102 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getAppointments, reset, addAppointmentRealtime, updateAppointmentRealtime } from '../features/appointments/appointmentSlice';
-import Spinner from '../components/Spinner';
 import io from 'socket.io-client';
 import { SOCKET_URL } from '../config';
+import PageHeader from '../components/common/PageHeader';
+import StatusBadge from '../components/common/StatusBadge';
+import FilterBar from '../components/common/FilterBar';
+import EmptyState from '../components/common/EmptyState';
+import { TableSkeleton } from '../components/common/LoadingSkeleton';
+import { upcomingAppointments } from '../data/mockData';
+
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AddIcon from '@mui/icons-material/Add';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const socket = io(SOCKET_URL);
 
 function AppointmentList() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const { appointments, isLoading } = useSelector(
-        (state) => state.appointment
-    );
+    const { appointments, isLoading } = useSelector((state) => state.appointment);
+    const [statusFilter, setStatusFilter] = useState('all');
 
     useEffect(() => {
         dispatch(getAppointments());
-
-        // Socket.IO Listeners
-        socket.on('new_appointment', (data) => {
-            // Ideally check if this appointment belongs to the user/doctor context
-            // For demo, just add it if it's relevant (or simplicity, add all)
-            dispatch(addAppointmentRealtime(data.appointment));
-        });
-
-        socket.on('appointment_updated', (data) => {
-            dispatch(updateAppointmentRealtime(data.appointment));
-        });
-
+        socket.on('new_appointment', (data) => dispatch(addAppointmentRealtime(data.appointment)));
+        socket.on('appointment_updated', (data) => dispatch(updateAppointmentRealtime(data.appointment)));
         return () => {
             socket.off('new_appointment');
             socket.off('appointment_updated');
             dispatch(reset());
         };
-    }, [navigate, dispatch]);
+    }, [dispatch]);
 
-    if (isLoading) {
-        return <Spinner />;
-    }
+    const displayData = appointments.length > 0
+        ? appointments.map(app => ({
+            id: app._id,
+            patient: app.patient?.user?.name || 'Unknown',
+            doctor: app.doctor?.user?.name || 'Unknown',
+            date: new Date(app.appointmentDate).toLocaleDateString(),
+            time: app.timeSlot,
+            type: app.reason || 'Consultation',
+            status: app.status,
+            avatar: (app.patient?.user?.name || 'U').charAt(0),
+        }))
+        : upcomingAppointments;
+
+    const filters = [
+        { label: 'All', value: 'all', count: displayData.length },
+        { label: 'Confirmed', value: 'Confirmed', count: displayData.filter(a => a.status === 'Confirmed').length },
+        { label: 'Pending', value: 'Pending', count: displayData.filter(a => a.status === 'Pending').length },
+    ];
+
+    const filtered = displayData.filter(a => statusFilter === 'all' || a.status === statusFilter);
+
+    if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Appointments</h1>
-                    <p className="text-gray-500">View and manage appointments</p>
-                </div>
-                <button
-                    onClick={() => navigate('/book-appointment')}
-                    className="btn-primary"
-                >
-                    Book New
+        <div>
+            <PageHeader
+                title="Appointments"
+                subtitle={`${displayData.length} total appointments`}
+                icon={<CalendarMonthIcon style={{ fontSize: 22 }} />}
+            >
+                <button onClick={() => navigate('/book-appointment')} className="btn-primary flex items-center gap-2">
+                    <AddIcon style={{ fontSize: 18 }} /> Book Appointment
                 </button>
-            </div>
+            </PageHeader>
 
-            <div className="grid grid-cols-1 gap-4">
-                {appointments.length > 0 ? (
-                    appointments.map((app) => (
-                        <div key={app._id} className="glass-panel p-6 flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold text-lg text-primary">{new Date(app.appointmentDate).toDateString()}</h3>
-                                <p className="text-gray-600">{app.timeSlot} - {app.reason}</p>
-                                <div className="mt-2 text-sm">
-                                    <span className="font-bold">Doctor:</span> {app.doctor?.user?.name || 'Unknown'} <br />
-                                    <span className="font-bold">Patient:</span> {app.patient?.user?.name || 'Unknown'}
-                                </div>
+            <FilterBar filters={filters} active={statusFilter} onChange={setStatusFilter} className="mb-6" />
+
+            {filtered.length === 0 ? (
+                <EmptyState title="No appointments found" subtitle="Book a new appointment to get started" />
+            ) : (
+                <div className="space-y-3">
+                    {filtered.map((appt) => (
+                        <div key={appt.id} className="glass-panel p-5 card-hover flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div className="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                {appt.avatar}
                             </div>
-                            <div>
-                                <span className={`px-4 py-2 rounded-full text-xs font-bold ${app.status === 'Confirmed' ? 'bg-green-100 text-green-600' :
-                                        app.status === 'Pending' ? 'bg-yellow-100 text-yellow-600' :
-                                            'bg-red-100 text-red-600'
-                                    }`}>
-                                    {app.status}
-                                </span>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-gray-900 dark:text-white">{appt.patient}</h3>
+                                <p className="text-sm text-gray-500">with {appt.doctor} • {appt.type}</p>
                             </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <CalendarMonthIcon style={{ fontSize: 16 }} />
+                                <span>{appt.date}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <AccessTimeIcon style={{ fontSize: 16 }} />
+                                <span>{appt.time}</span>
+                            </div>
+                            <StatusBadge status={appt.status} />
                         </div>
-                    ))
-                ) : (
-                    <div className="text-center py-10 text-gray-500">
-                        No appointments found.
-                    </div>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

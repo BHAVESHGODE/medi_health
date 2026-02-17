@@ -68,6 +68,10 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const labRoutes = require('./routes/labRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const path = require('path');
+const notificationRoutes = require('./routes/notificationRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+const exportRoutes = require('./routes/exportRoutes');
+const triageRoutes = require('./routes/triageRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
@@ -82,6 +86,10 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/insurance', insuranceRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/lab', labRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/exports', exportRoutes);
+app.use('/api/triage', triageRoutes);
 
 // Make uploads folder static
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

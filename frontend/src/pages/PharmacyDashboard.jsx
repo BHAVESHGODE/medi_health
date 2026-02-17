@@ -1,30 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getInventory, addItem, reset } from '../features/inventory/inventorySlice';
-import Spinner from '../components/Spinner';
+import PageHeader from '../components/common/PageHeader';
+import StatCard from '../components/common/StatCard';
+import StatusBadge from '../components/common/StatusBadge';
+import SearchBar from '../components/common/SearchBar';
+import FilterBar from '../components/common/FilterBar';
+import { TableSkeleton } from '../components/common/LoadingSkeleton';
+
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import WarningIcon from '@mui/icons-material/Warning';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CloseIcon from '@mui/icons-material/Close';
 
 function PharmacyDashboard() {
     const dispatch = useDispatch();
-    const { items, isLoading } = useSelector(
-        (state) => state.inventory
-    );
-
+    const { items, isLoading } = useSelector((state) => state.inventory);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newItem, setNewItem] = useState({
-        itemName: '',
-        category: 'Medicine',
-        quantity: 0,
-        unitPrice: 0,
-        supplier: '',
-        lowStockThreshold: 10
-    });
+    const [search, setSearch] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [newItem, setNewItem] = useState({ itemName: '', category: 'Medicine', quantity: 0, unitPrice: 0, supplier: '', lowStockThreshold: 10 });
 
     useEffect(() => {
         dispatch(getInventory());
-        return () => { dispatch(reset()) };
+        return () => { dispatch(reset()); };
     }, [dispatch]);
 
     const handleAddItem = (e) => {
@@ -33,83 +34,92 @@ function PharmacyDashboard() {
         setShowAddModal(false);
     };
 
-    if (isLoading) return <Spinner />;
+    const totalValue = items.reduce((acc, curr) => acc + (curr.unitPrice * curr.quantity), 0);
+    const lowStockCount = items.filter(i => i.quantity <= i.lowStockThreshold).length;
+
+    const categories = [
+        { label: 'All', value: 'all', count: items.length },
+        { label: 'Medicine', value: 'Medicine', count: items.filter(i => i.category === 'Medicine').length },
+        { label: 'Equipment', value: 'Equipment', count: items.filter(i => i.category === 'Equipment').length },
+        { label: 'Consumable', value: 'Consumable', count: items.filter(i => i.category === 'Consumable').length },
+    ];
+
+    const filtered = items
+        .filter(i => categoryFilter === 'all' || i.category === categoryFilter)
+        .filter(i => i.itemName?.toLowerCase().includes(search.toLowerCase()));
+
+    if (isLoading) return <TableSkeleton />;
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Pharmacy & Inventory</h1>
-                    <p className="text-gray-500">Manage stock and medicines</p>
-                </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="btn-primary flex items-center gap-2"
-                >
-                    <AddCircleIcon /> Add Item
+        <div>
+            <PageHeader
+                title="Pharmacy & Inventory"
+                subtitle="Manage stock and medicines"
+                icon={<LocalPharmacyIcon style={{ fontSize: 22 }} />}
+            >
+                <button onClick={() => setShowAddModal(true)} className="btn-primary flex items-center gap-2">
+                    <AddCircleIcon style={{ fontSize: 18 }} /> Add Item
                 </button>
+            </PageHeader>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <StatCard title="Total Items" value={items.length} icon={<InventoryIcon style={{ fontSize: 22 }} />} color="sky" />
+                <StatCard title="Low Stock Alerts" value={lowStockCount} icon={<WarningIcon style={{ fontSize: 22 }} />} color="rose" trend={lowStockCount > 0 ? 'up' : undefined} trendValue={lowStockCount > 0 ? 'Needs attention' : undefined} />
+                <StatCard title="Total Value" value={`$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} icon={<AttachMoneyIcon style={{ fontSize: 22 }} />} color="emerald" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                {/* Stats */}
-                <div className="glass-panel p-6 bg-blue-50">
-                    <h3 className="text-lg font-bold text-blue-700">Total Items</h3>
-                    <p className="text-4xl font-bold">{items.length}</p>
-                </div>
-                <div className="glass-panel p-6 bg-red-50">
-                    <h3 className="text-lg font-bold text-red-700">Low Stock Alerts</h3>
-                    <p className="text-4xl font-bold text-red-600">
-                        {items.filter(i => i.quantity <= i.lowStockThreshold).length}
-                    </p>
-                </div>
-                <div className="glass-panel p-6 bg-green-50">
-                    <h3 className="text-lg font-bold text-green-700">Total Value</h3>
-                    <p className="text-4xl font-bold text-green-600">
-                        ${items.reduce((acc, curr) => acc + (curr.unitPrice * curr.quantity), 0).toFixed(2)}
-                    </p>
-                </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <FilterBar filters={categories} active={categoryFilter} onChange={setCategoryFilter} />
+                <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search items..." className="w-64" />
             </div>
 
-            <div className="glass-panel p-6 overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+            <div className="glass-panel overflow-hidden">
+                <table className="table-modern">
                     <thead>
-                        <tr className="border-b border-gray-200">
-                            <th className="p-3">Item Name</th>
-                            <th className="p-3">Category</th>
-                            <th className="p-3">Stock</th>
-                            <th className="p-3">Price</th>
-                            <th className="p-3">Supplier</th>
-                            <th className="p-3">Status</th>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Category</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Supplier</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map(item => (
-                            <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="p-3 font-medium">{item.itemName}</td>
-                                <td className="p-3">{item.category}</td>
-                                <td className="p-3">{item.quantity}</td>
-                                <td className="p-3">${item.unitPrice}</td>
-                                <td className="p-3">{item.supplier || '-'}</td>
-                                <td className="p-3">
-                                    {item.quantity <= item.lowStockThreshold ? (
-                                        <span className="flex items-center gap-1 text-red-600 font-bold text-xs bg-red-100 px-2 py-1 rounded-full w-max">
-                                            <WarningIcon fontSize="small" /> Low Stock
-                                        </span>
-                                    ) : (
-                                        <span className="text-green-600 font-bold text-xs bg-green-100 px-2 py-1 rounded-full">In Stock</span>
-                                    )}
+                        {filtered.map(item => (
+                            <tr key={item._id}>
+                                <td className="font-medium text-gray-900 dark:text-white">{item.itemName}</td>
+                                <td><span className="badge-neutral badge">{item.category}</span></td>
+                                <td>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold">{item.quantity}</span>
+                                        {item.quantity <= item.lowStockThreshold && (
+                                            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse-soft" />
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="font-medium">${item.unitPrice}</td>
+                                <td className="text-gray-500">{item.supplier || '-'}</td>
+                                <td>
+                                    <StatusBadge status={item.quantity <= item.lowStockThreshold ? 'Low Stock' : 'In Stock'} />
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+                {filtered.length === 0 && <p className="text-center py-8 text-gray-400 text-sm">No items found.</p>}
             </div>
 
-            {/* Add Item Modal (Simple implementation) */}
+            {/* Add Item Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="glass-panel p-8 w-full max-w-md bg-white">
-                        <h2 className="text-2xl font-bold mb-4">Add New Item</h2>
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md shadow-float mx-4">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Add New Item</h2>
+                            <button onClick={() => setShowAddModal(false)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400">
+                                <CloseIcon style={{ fontSize: 20 }} />
+                            </button>
+                        </div>
                         <form onSubmit={handleAddItem} className="space-y-4">
                             <input className="glass-input w-full" placeholder="Item Name" value={newItem.itemName} onChange={e => setNewItem({ ...newItem, itemName: e.target.value })} required />
                             <select className="glass-input w-full" value={newItem.category} onChange={e => setNewItem({ ...newItem, category: e.target.value })}>
@@ -117,18 +127,19 @@ function PharmacyDashboard() {
                                 <option value="Equipment">Equipment</option>
                                 <option value="Consumable">Consumable</option>
                             </select>
-                            <input type="number" className="glass-input w-full" placeholder="Quantity" value={newItem.quantity} onChange={e => setNewItem({ ...newItem, quantity: e.target.value })} />
-                            <input type="number" className="glass-input w-full" placeholder="Unit Price" value={newItem.unitPrice} onChange={e => setNewItem({ ...newItem, unitPrice: e.target.value })} />
+                            <div className="grid grid-cols-2 gap-3">
+                                <input type="number" className="glass-input w-full" placeholder="Quantity" value={newItem.quantity} onChange={e => setNewItem({ ...newItem, quantity: e.target.value })} />
+                                <input type="number" className="glass-input w-full" placeholder="Unit Price" value={newItem.unitPrice} onChange={e => setNewItem({ ...newItem, unitPrice: e.target.value })} />
+                            </div>
                             <input className="glass-input w-full" placeholder="Supplier" value={newItem.supplier} onChange={e => setNewItem({ ...newItem, supplier: e.target.value })} />
-                            <div className="flex justify-end gap-2 mt-6">
-                                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-500 hover:text-gray-700">Cancel</button>
+                            <div className="flex justify-end gap-3 pt-2">
+                                <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary">Cancel</button>
                                 <button type="submit" className="btn-primary">Add Item</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

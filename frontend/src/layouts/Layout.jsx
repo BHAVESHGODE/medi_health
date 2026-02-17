@@ -1,11 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import TopBar from '../components/TopBar';
+import Footer from '../components/common/Footer';
 import { useState, useEffect } from 'react';
 
 function Layout() {
     const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         if (darkMode) {
@@ -20,12 +21,22 @@ function Layout() {
     const toggleTheme = () => setDarkMode(!darkMode);
 
     return (
-        <div className={`flex w-full min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300`}>
-            <Sidebar darkMode={darkMode} toggleTheme={toggleTheme} />
-            <div className="flex-1 ml-64 p-8 overflow-y-auto h-screen dark:text-gray-100">
-                <Outlet />
+        <div className="flex w-full min-h-screen bg-slate-50 dark:bg-gray-900 transition-colors duration-300">
+            <Sidebar
+                darkMode={darkMode}
+                toggleTheme={toggleTheme}
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+            />
+            <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+                <TopBar toggleSidebar={() => setSidebarOpen(true)} />
+                <main className="flex-1 p-6 lg:p-8 overflow-y-auto dark:text-gray-100">
+                    <div className="max-w-7xl mx-auto page-enter">
+                        <Outlet />
+                    </div>
+                </main>
+                <Footer />
             </div>
-            <ToastContainer />
         </div>
     );
 }

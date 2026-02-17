@@ -38,6 +38,11 @@ const emergencyCaseSchema = new mongoose.Schema({
         spo2: String,
         temp: String
     },
+    triage: {
+        score: Number,
+        priority: { type: String, enum: ['critical','urgent','semi-urgent','non-urgent'] },
+        at: Date
+    },
     notes: String
 }, { timestamps: true });
 
